@@ -56,18 +56,18 @@ RUN cd /home/pentaho/install && \
     cp -rf /home/pentaho/tmp/pentaho-pdi/pdi-ee-client-${PDI_EE_CLIENT}/* /home/pentaho/app/pentaho-pdi
 #COPYING expect script-----------------------------------------------------------     
 COPY expect-script.exp /home/pentaho/app/pentaho/
-COPY expect-script-paz.exp /home/pentaho/install/paz-plugin-ee-${PAZ_PLUGIN_EE}
-COPY expect-script-pdd.exp /home/pentaho/install/pdd-plugin-ee-${PDD_PLUGIN_EE}
-COPY expect-script-pir.exp /home/pentaho/install/pir-plugin-ee-${PIR_PLUGIN_EE}
+COPY expect-script-paz.exp ${PENTAHO_LICENSE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE}
+COPY expect-script-pdd.exp ${PENTAHO_LICENSE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE}
+COPY expect-script-pir.exp ${PENTAHO_LICENSE_PATH}/pir-plugin-ee-${PIR_PLUGIN_EE}
 COPY expect-script-pdi.exp /home/pentaho/app/pentaho-pdi
 #-----------Expect script to exract all packages-------------------------------
 RUN cd /home/pentaho/app/pentaho/ && \
     ./expect-script.exp && \
-     cd /home/pentaho/install/paz-plugin-ee-${PAZ_PLUGIN_EE} && \
+     cd ${PENTAHO_LICENSE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE} && \
     ./expect-script-paz.exp && \
-    cd /home/pentaho/install/pdd-plugin-ee-${PDD_PLUGIN_EE} && \
+    cd ${PENTAHO_LICENSE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE} && \
     ./expect-script-pdd.exp && \
-    cd /home/pentaho/install/pir-plugin-ee-${PIR_PLUGIN_EE} && \
+    cd ${PENTAHO_LICENSE_PATH}/pir-plugin-ee-${PIR_PLUGIN_EE} && \
     ./expect-script-pir.exp && \
     cd /home/pentaho/app/pentaho-pdi && \
     ./expect-script-pdi.exp
