@@ -1,26 +1,27 @@
 FROM 345280441424.dkr.ecr.ap-south-1.amazonaws.com/ark_base_java8:latest
-ENV PENTAHO_SERVER_EE=8.3.0.0-371 \
-    PENTAHO_SERVER_LICENSES=2020 \
-    PIR_PLUGIN_EE=8.3.0.0-371 \
-    PAZ_PLUGIN_EE=8.3.0.0-371 \
-    PDD_PLUGIN_EE=8.3.0.0-371 \
-    PDI_EE_CLIENT=8.3.0.0-371 \
-    BASE_PATH=/home/pentaho/app/pentaho/pentaho-server \
+ENV BASE_PATH=/home/pentaho/app/pentaho/pentaho-server \
     PENTAHO_LICENSE_PATH=/home/pentaho/install \
     PENTAHO_LICENSE_INSTALLER=/home/pentaho/app/pentaho/license-installer \
     PENTAHO_PDI_LICENSE=/home/pentaho/app/pentaho-pdi/license-installer \
-    MYSQL_CONNECTOR_VERSION=8.0.25 \
-    MARIADB_CONNECTOR_VERSION=2.2.6 \
-    ARKCASE_PRE_AUTH_VERSION=4-1.1.1 \
     PENTAHO_USER=pentaho \
-    PENTAHO_PDI=pentaho-pdi \
-    PENTAHO_PORT=2002
-ARG RESOURCE_PATH="artifacts"
+    PENTAHO_PDI=pentaho-pdi
+    
+ARG RESOURCE_PATH="artifacts" \
+    PENTAHO_SERVER_EE="8.3.0.0-371" \
+    PENTAHO_SERVER_LICENSES="2020" \
+    PIR_PLUGIN_EE="8.3.0.0-371" \
+    PAZ_PLUGIN_EE="8.3.0.0-371" \
+    PDD_PLUGIN_EE="8.3.0.0-371" \
+    PDI_EE_CLIENT="8.3.0.0-371" \
+    MYSQL_CONNECTOR_VERSION="8.0.25" \
+    MARIADB_CONNECTOR_VERSION="2.2.6" \
+    ARKCASE_PRE_AUTH_VERSION="4-1.1.1" \
+    PENTAHO_PORT="2002"
 
 LABEL ORG="Armedia LLC" \
       VERSION="1.0" \
       IMAGE_SOURCE=https://github.com/ArkCase/ark_pentaho_ee \
-      MAINTAINER="Armedia LLC"
+      MAINTAINER="Armedia Devops Team <devops@armedia.com>"
 
 #-----------PENTAHO SETUP-------------------------------------
 RUN mkdir -p /home/pentaho/data/pentaho && \
@@ -40,7 +41,11 @@ RUN mkdir -p /home/pentaho/data/pentaho && \
     yum install -y expect && \
     yum clean -y all
 
-COPY ${RESOURCE_PATH}/pentaho-server-licenses-${PENTAHO_SERVER_LICENSES}.zip ${RESOURCE_PATH}/pir-plugin-ee-${PIR_PLUGIN_EE}-dist.zip ${RESOURCE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE}-dist.zip ${RESOURCE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE}-dist.zip ${RESOURCE_PATH}/pentaho-server-ee-${PENTAHO_SERVER_EE}-dist.zip /home/pentaho/install/
+COPY ${RESOURCE_PATH}/pentaho-server-licenses-${PENTAHO_SERVER_LICENSES}.zip \
+     ${RESOURCE_PATH}/pir-plugin-ee-${PIR_PLUGIN_EE}-dist.zip \
+     ${RESOURCE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE}-dist.zip  \
+     ${RESOURCE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE}-dist.zip \
+     ${RESOURCE_PATH}/pentaho-server-ee-${PENTAHO_SERVER_EE}-dist.zip /home/pentaho/install/
 COPY ${RESOURCE_PATH}/pdi-ee-client-${PDI_EE_CLIENT}-dist.zip /home/pentaho/tmp/pentaho-pdi
 COPY ${RESOURCE_PATH}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar ${BASE_PATH}/tomcat/lib/
 #Unzipping all packages-------------------------------------------------------
@@ -53,13 +58,14 @@ RUN cd /home/pentaho/install && \
     cp -rf pentaho-server-ee-${PENTAHO_SERVER_EE}/* /home/pentaho/app/pentaho && \
     cd /home/pentaho/tmp/pentaho-pdi && \
     unzip pdi-ee-client-${PDI_EE_CLIENT}-dist.zip && \
-    cp -rf /home/pentaho/tmp/pentaho-pdi/pdi-ee-client-${PDI_EE_CLIENT}/* /home/pentaho/app/pentaho-pdi
+    cp -rf /home/pentaho/tmp/pentaho-pdi/pdi-ee-client-${PDI_EE_CLIENT}/* /home/pentaho/app/pentaho-pdi && \
+    rm /home/pentaho/install/*.zip
 #COPYING expect script-----------------------------------------------------------     
-COPY expect-script.exp /home/pentaho/app/pentaho/
-COPY expect-script-paz.exp ${PENTAHO_LICENSE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE}
-COPY expect-script-pdd.exp ${PENTAHO_LICENSE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE}
-COPY expect-script-pir.exp ${PENTAHO_LICENSE_PATH}/pir-plugin-ee-${PIR_PLUGIN_EE}
-COPY expect-script-pdi.exp /home/pentaho/app/pentaho-pdi
+COPY ${RESOURCE_PATH}/expect-script.exp /home/pentaho/app/pentaho/
+COPY ${RESOURCE_PATH}/expect-script-paz.exp ${PENTAHO_LICENSE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE}
+COPY ${RESOURCE_PATH}/expect-script-pdd.exp ${PENTAHO_LICENSE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE}
+COPY ${RESOURCE_PATH}/expect-script-pir.exp ${PENTAHO_LICENSE_PATH}/pir-plugin-ee-${PIR_PLUGIN_EE}
+COPY ${RESOURCE_PATH}/expect-script-pdi.exp /home/pentaho/app/pentaho-pdi
 #-----------Expect script to exract all packages-------------------------------
 RUN cd /home/pentaho/app/pentaho/ && \
     ./expect-script.exp && \
@@ -72,11 +78,11 @@ RUN cd /home/pentaho/app/pentaho/ && \
     cd /home/pentaho/app/pentaho-pdi && \
     ./expect-script-pdi.exp
 #--------------------Database configuration templates------------------
-COPY ${RESOURCE_PATH}/mysql-connector-java-8.0.25.jar ${BASE_PATH}/tomcat/lib/
-COPY ${RESOURCE_PATH}/mariadb-java-client-2.2.6.jar ${BASE_PATH}/tomcat/lib/
+COPY ${RESOURCE_PATH}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar ${BASE_PATH}/tomcat/lib/
+COPY ${RESOURCE_PATH}/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar ${BASE_PATH}/tomcat/lib/
 RUN chmod -R 644 ${BASE_PATH}/tomcat/conf/server.xml
 #---------preauthentication setup----------------------------------------------
-COPY ${RESOURCE_PATH}/arkcase-preauth-springsec-v4-1.1.1-bundled.jar ${BASE_PATH}/tomcat/webapps/pentaho/WEB-INF/lib/
+COPY ${RESOURCE_PATH}/arkcase-preauth-springsec-v${ARKCASE_PRE_AUTH_VERSION}-bundled.jar ${BASE_PATH}/tomcat/webapps/pentaho/WEB-INF/lib/
 #---------Update Pentaho to support report designer within ArkCase iframe---------
 RUN cp -rf  ${BASE_PATH}/tomcat/webapps/pentaho/mantle/home/properties/ ${BASE_PATH}/tomcat/webapps/pentaho/mantle/ && \
     cp -rf  ${BASE_PATH}/tomcat/webapps/pentaho/mantle/home/content ${BASE_PATH}/tomcat/webapps/pentaho/mantle && \
@@ -89,14 +95,16 @@ RUN cp -rf  ${BASE_PATH}/tomcat/webapps/pentaho/mantle/home/properties/ ${BASE_P
     chown -R pentaho:pentaho /home/pentaho/* && \
     chmod -R 777  /home/pentaho/* && \
     chmod -R 777  /home/pentaho/ && \
-    sed -i  "s/l\&\&l.className\&\&l/l&&l/g" ${BASE_PATH}/pentaho-solutions/system/reporting/reportviewer/compressed/reportviewer-app.js 
+    sed -i  "s/l\&\&l.className\&\&l/l&&l/g" ${BASE_PATH}/pentaho-solutions/system/reporting/reportviewer/compressed/reportviewer-app.js
+    
 USER pentaho 
 RUN sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Analysis Enterprise Edition.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho BI Platform Enterprise Edition.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Dashboard Designer.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Reporting Enterprise Edition.lic" && \
     sh ${PENTAHO_PDI_LICENSE}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Analysis Enterprise Edition.lic" && \
-    sh ${PENTAHO_PDI_LICENSE}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho PDI Enterprise Edition.lic"
+    sh ${PENTAHO_PDI_LICENSE}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho PDI Enterprise Edition.lic" && \
+    rm ${PENTAHO_LICENSE_PATH}/*.lic
 EXPOSE ${PENTAHO_PORT}
 WORKDIR ${BASE_PATH}
 CMD ["start-pentaho.sh"]

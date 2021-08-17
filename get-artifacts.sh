@@ -23,3 +23,8 @@ aws s3 cp  "s3://arkcase-container-artifacts/ark_pentaho_ee/pdi-ee-client-${PDI_
 aws s3 cp  "s3://arkcase-container-artifacts/ark_pentaho_ee/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar" artifacts/
 aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar" artifacts/
 aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/arkcase-preauth-springsec-v${ARKCASE_PRE_AUTH_VERSION}-bundled.jar" artifacts/
+aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/expect-script.exp" artifacts/
+aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/expect-script-paz.exp" artifacts/
+aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/expect-script-pdd.exp" artifacts/
+aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/expect-script-pdi.exp" artifacts/
+aws s3 cp "s3://arkcase-container-artifacts/ark_pentaho_ee/expect-script-pir.exp" artifacts/
