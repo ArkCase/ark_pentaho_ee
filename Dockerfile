@@ -19,6 +19,7 @@ ARG RESOURCE_PATH="artifacts" \
     PENTAHO_PORT="2002"
 
 LABEL ORG="Armedia LLC" \
+      APP="Pentaho EE" \
       VERSION="1.0" \
       IMAGE_SOURCE=https://github.com/ArkCase/ark_pentaho_ee \
       MAINTAINER="Armedia Devops Team <devops@armedia.com>"
@@ -48,7 +49,7 @@ COPY ${RESOURCE_PATH}/pentaho-server-licenses-${PENTAHO_SERVER_LICENSES}.zip \
      ${RESOURCE_PATH}/pentaho-server-ee-${PENTAHO_SERVER_EE}-dist.zip /home/pentaho/install/
 COPY ${RESOURCE_PATH}/pdi-ee-client-${PDI_EE_CLIENT}-dist.zip /home/pentaho/tmp/pentaho-pdi
 COPY ${RESOURCE_PATH}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar ${BASE_PATH}/tomcat/lib/
-#Unzipping all packages-------------------------------------------------------
+#------------------Unzipping all packages-------------------------------------------------------
 RUN cd /home/pentaho/install && \
     unzip pir-plugin-ee-${PIR_PLUGIN_EE}-dist.zip && \
     unzip paz-plugin-ee-${PAZ_PLUGIN_EE}-dist.zip && \
@@ -60,7 +61,7 @@ RUN cd /home/pentaho/install && \
     unzip pdi-ee-client-${PDI_EE_CLIENT}-dist.zip && \
     cp -rf /home/pentaho/tmp/pentaho-pdi/pdi-ee-client-${PDI_EE_CLIENT}/* /home/pentaho/app/pentaho-pdi && \
     rm /home/pentaho/install/*.zip
-#COPYING expect script-----------------------------------------------------------     
+#----------------COPYING expect script-----------------------------------------------------------     
 COPY expect-script.exp /home/pentaho/app/pentaho/
 COPY expect-script-paz.exp ${PENTAHO_LICENSE_PATH}/paz-plugin-ee-${PAZ_PLUGIN_EE}
 COPY expect-script-pdd.exp ${PENTAHO_LICENSE_PATH}/pdd-plugin-ee-${PDD_PLUGIN_EE}
@@ -108,4 +109,3 @@ RUN sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LI
 EXPOSE ${PENTAHO_PORT}
 WORKDIR ${BASE_PATH}
 CMD ["start-pentaho.sh"]
-
