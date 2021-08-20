@@ -1,0 +1,18 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ./install.sh
+
+expect "More--"
+send "\n\exp_continue"
+send "\n\exp_continue"
+
+
+expect "Press 1 to accept, 2 to reject, 3 to redisplay"
+#send -- "1\n"
+send -- "1\n\/home/pentaho/app/pentaho\n"
+send -- "1\n"
+
+expect "Select the installation path"
+send -- "1\n"
+expect "Press 1 to accept, 2 to reject, 3 to redisplay"
+#send -- "1\n"
