@@ -82,6 +82,7 @@ RUN cd /home/pentaho/app/pentaho/ && \
 COPY ${RESOURCE_PATH}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar ${BASE_PATH}/tomcat/lib/
 COPY ${RESOURCE_PATH}/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar ${BASE_PATH}/tomcat/lib/
 RUN chmod -R 644 ${BASE_PATH}/tomcat/conf/server.xml
+    
 #---------preauthentication setup----------------------------------------------
 COPY ${RESOURCE_PATH}/arkcase-preauth-springsec-v${ARKCASE_PRE_AUTH_VERSION}-bundled.jar ${BASE_PATH}/tomcat/webapps/pentaho/WEB-INF/lib/
 #---------Update Pentaho to support report designer within ArkCase iframe---------
@@ -97,7 +98,7 @@ RUN cp -rf  ${BASE_PATH}/tomcat/webapps/pentaho/mantle/home/properties/ ${BASE_P
     chmod -R 777  /home/pentaho/* && \
     chmod -R 777  /home/pentaho/ && \
     sed -i  "s/l\&\&l.className\&\&l/l&&l/g" ${BASE_PATH}/pentaho-solutions/system/reporting/reportviewer/compressed/reportviewer-app.js
-    
+ENV PATH=${BASE_PATH}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 USER pentaho 
 RUN sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Analysis Enterprise Edition.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho BI Platform Enterprise Edition.lic" && \
