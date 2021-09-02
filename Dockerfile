@@ -100,7 +100,10 @@ RUN cp -rf  ${BASE_PATH}/tomcat/webapps/pentaho/mantle/home/properties/ ${BASE_P
     sed -i  "s/l\&\&l.className\&\&l/l&&l/g" ${BASE_PATH}/pentaho-solutions/system/reporting/reportviewer/compressed/reportviewer-app.js
 ENV PATH=${BASE_PATH}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 USER pentaho 
-RUN sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Analysis Enterprise Edition.lic" && \
+RUN chmod -R 777  /home/pentaho/app/pentaho/license-installer/* && \
+    chmod -R 777  /home/pentaho/install/* && \
+    chmod -R 777 /home/pentaho/app/pentaho-pdi/license-installer/* && \
+    sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Analysis Enterprise Edition.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho BI Platform Enterprise Edition.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Dashboard Designer.lic" && \
     sh ${PENTAHO_LICENSE_INSTALLER}/install_license.sh  install -q "${PENTAHO_LICENSE_PATH}/Pentaho Reporting Enterprise Edition.lic" && \
